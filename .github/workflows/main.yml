@@ -1,27 +1,26 @@
-name: Deploy from Dev to Test
+name: Sync Fork
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: '0 0 * * *'  # This schedule runs the workflow daily at midnight
 
 jobs:
-  deploy:
+  sync:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code from Dev
+    - name: Check out code
       uses: actions/checkout@v2
-      with:
-        repository: Techtidy/my-app-dev
-        ref: main  # Change to the branch you want to deploy from
 
-    - name: Push to Test
+    - name: Set up Git
       run: |
-        git clone git@github.com:Techtidy/my-app-test.git
-        cd my-app-test
-        git checkout main  # Change to the branch you want to deploy to in the "Test" repository
-        cp -r ../${{ github.workspace }}/* .
-        git add .
-        git commit -m "Automated push from Dev to Test"
-        git push
+        git config --global user.email eng21ct0007@dsu.edu.in
+        git config --global user.name hrk-2109
+
+    - name: Sync with my-app-dev
+      run: |
+        git remote add upstream https://github.com/Techtidy/my-app-dev.git
+        git fetch upstream
+        git checkout main # Replace with the branch you want to sync
+        git merge upstream/main --no-edit  # Replace with the branch you want to sync
+        git push origin main  # Replace with the branch you want to sync
